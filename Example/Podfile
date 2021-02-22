@@ -1,0 +1,13 @@
+platform :ios, '10.0'
+use_modular_headers!
+inhibit_all_warnings!
+
+target 'SNKit_Example' do
+  pod 'SNKit', :path => '../'
+
+  target 'SNKit_Tests' do
+    inherit! :search_paths
+
+    pod 'SnapKit'
+  end
+end
