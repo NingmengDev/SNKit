@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SNKit'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Provides some useful classes, structs and extensions.'
 
 # This description is used to generate tags and improve search results.
@@ -48,6 +48,12 @@ Pod::Spec.new do |s|
   # Extension
   s.subspec 'Extension' do |sp|
   	sp.source_files = 'SNKit/Classes/Extension/**/*'
+  end
+  
+  # Networking
+  s.subspec 'Networking' do |sp|
+      sp.source_files = 'SNKit/Classes/Networking/**/*'
+      sp.dependency 'Moya'
   end
   
 end
