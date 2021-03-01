@@ -14,7 +14,7 @@ public extension Task {
     /// For parameter value: Array, Dictionary will be mapped into json string, NSNumber will be mapped into stringValue, Bool will be mapped using the rule: 'false' -> "0", 'true' -> "1".
     /// - Parameter parameters: The request parameters.
     /// - Returns: A Task instance, represents an HTTP task.
-    public static func multipartPost(_ parameters: [String : Any]) -> Task {
+    static func multipartPost(_ parameters: [String : Any]) -> Task {
         let compactedParameters = parameters.compactMapValues { $0 }
         return .uploadMultipart(compactedParameters.compactMap { (key, value) -> MultipartFormData? in
             let transform: Data?
