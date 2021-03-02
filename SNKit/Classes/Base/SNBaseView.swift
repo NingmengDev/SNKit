@@ -48,7 +48,7 @@ open class SNZeroedSeparatorInsetTableViewCell : SNBaseTableViewCell {
 
 // MARK: - SNBaseTableViewHeaderFooterView
 
-class SNBaseTableViewHeaderFooterView : UITableViewHeaderFooterView, SNBaseViewInitialization {
+open class SNBaseTableViewHeaderFooterView : UITableViewHeaderFooterView, SNBaseViewInitialization {
     
     public override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -60,7 +60,7 @@ class SNBaseTableViewHeaderFooterView : UITableViewHeaderFooterView, SNBaseViewI
         self.initialization()
     }
     
-    func initialization() {
+    open func initialization() {
         self.contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.contentView.backgroundColor = UIColor.white
     }

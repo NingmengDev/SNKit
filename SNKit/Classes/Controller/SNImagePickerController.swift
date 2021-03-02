@@ -8,52 +8,91 @@
 
 import UIKit
 
+/// A configuration for `SNImagePickerController`.
+/// You must invoke function 'configurate(_:)' to configurate localized title of actions those defines in 'Action'.
+/// The configured title of action will be used in action sheet before presenting SNImagePickerController.
+public class SNImagePickerConfiguration {
+    
+    public enum Action : Int {
+        case openingCamera
+        case openingPhotoLibrary
+        case cancel
+    }
+    
+    static let shared = SNImagePickerConfiguration()
+    private var configuredTitles: [Action : String] = [:]
+    typealias SNImagePickerSourceType = UIImagePickerController.SourceType
+    
+    public static func configurate(_ handler: (SNImagePickerConfiguration) -> Void) {
+        handler(shared)
+    }
+    
+    public func setTitle(_ title: String, for action: Action) {
+        configuredTitles[action] = title
+    }
+    
+    static func configuredTitle(for action: Action) -> String {
+        return shared.configuredTitles[action] ?? ""
+    }
+    
+    static func availableSourceTypes() -> [SNImagePickerSourceType] {
+        return [.camera, .photoLibrary].filter {
+            return UIImagePickerController.isSourceTypeAvailable($0)
+        }
+    }
+    
+    static func action(for sourceType: SNImagePickerSourceType) -> Action {
+        switch sourceType {
+        case .camera:
+            return .openingCamera
+        default:
+            return .openingPhotoLibrary
+        }
+    }
+}
+
 public final class SNImagePickerController : UIImagePickerController {
     
     private var completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)?
-    
-    /// Presents from a viewcontroller, and call the reslut back in completionHandler.
+        
+    /// Presents a SNImagePickerController from a view controller, and call reslut back in the completion handler.
     /// - Parameters:
     ///   - presentingViewController: The view controller that presented this view controller.
-    ///   - completionHandler: In stead of delegate to call the reslut back.
-    public static func present(from presentingViewController: UIViewController, allowsEditing: Bool = false,
-                               completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)? = nil) {
+    ///   - completionHandler: In stead of delegate to call reslut back.
+    public static func present(from presentingViewController: UIViewController,
+                               allowsEditing: Bool = true,
+                               completionHandler: @escaping (([UIImagePickerController.InfoKey : Any]) -> Void)) {
+        ///
+        let availableSourceTypes = SNImagePickerConfiguration.availableSourceTypes()
+        if availableSourceTypes.isEmpty { return }
+        ///
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        if UIImagePickerController.isSourceTypeAvailable(.camera), UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            alertController.addAction(UIAlertAction(title: "拍照", style: .default, handler: { [weak presentingViewController] (_) in
-                guard let presenting = presentingViewController else { return }
-                SNImagePickerController.present(from: presenting, allowsEditing: allowsEditing, sourceType: .camera, completionHandler: completionHandler)
-            }))
-            alertController.addAction(UIAlertAction(title: "从手机相册选择", style: .default, handler: { [weak presentingViewController] (_) in
-                guard let presenting = presentingViewController else { return }
-                SNImagePickerController.present(from: presenting, allowsEditing: allowsEditing, sourceType: .photoLibrary, completionHandler: completionHandler)
-            }))
-        } else if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            alertController.addAction(UIAlertAction(title: "拍照", style: .default, handler: { [weak presentingViewController] (_) in
-                guard let presenting = presentingViewController else { return }
-                SNImagePickerController.present(from: presenting, allowsEditing: allowsEditing, sourceType: .camera, completionHandler: completionHandler)
-            }))
-        } else if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            alertController.addAction(UIAlertAction(title: "从手机相册选择", style: .default, handler: { [weak presentingViewController] (_) in
-                guard let presenting = presentingViewController else { return }
-                SNImagePickerController.present(from: presenting, allowsEditing: allowsEditing, sourceType: .photoLibrary, completionHandler: completionHandler)
-            }))
+        for availableSourceType in availableSourceTypes {
+            let action = SNImagePickerConfiguration.action(for: availableSourceType)
+            alertController.addAction(UIAlertAction(title: SNImagePickerConfiguration.configuredTitle(for: action),
+                                                    style: .default) { [weak presentingViewController] (_) in
+                guard let strongPresentingViewController = presentingViewController else { return }
+                SNImagePickerController.present(from: strongPresentingViewController,
+                                                allowsEditing: allowsEditing,
+                                                sourceType: availableSourceType,
+                                                completionHandler: completionHandler)
+            })
         }
-        alertController.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        DispatchQueue.main.async { presentingViewController.present(alertController, animated: true, completion: nil) }
+        alertController.addAction(UIAlertAction(title: SNImagePickerConfiguration.configuredTitle(for: .cancel), style: .cancel))
+        DispatchQueue.main.async { presentingViewController.present(alertController, animated: true) }
     }
     
-    private class func present(from presentingViewController: UIViewController,
-                               allowsEditing: Bool,
-                               sourceType: UIImagePickerController.SourceType,
-                               completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)? = nil) {
+    private static func present(from presentingViewController: UIViewController,
+                                allowsEditing: Bool,
+                                sourceType: UIImagePickerController.SourceType,
+                                completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)? = nil) {
         let imagePickerController = SNImagePickerController()
         imagePickerController.sourceType = sourceType
         imagePickerController.allowsEditing = allowsEditing
         imagePickerController.modalPresentationStyle = .fullScreen
         imagePickerController.delegate = imagePickerController
         imagePickerController.completionHandler = completionHandler
-        presentingViewController.present(imagePickerController, animated: true, completion: nil)
+        presentingViewController.present(imagePickerController, animated: true)
     }
 }
 
