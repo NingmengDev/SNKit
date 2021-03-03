@@ -10,8 +10,8 @@ import UIKit
 
 /// A configuration for `SNImagePickerController`.
 /// You must invoke function 'configurate(_:)' to configurate localized title of actions those defines in 'Action'.
-/// The configured title of action will be used in action sheet before presenting SNImagePickerController.
-public class SNImagePickerConfiguration {
+/// The configured localized titles will be used in action sheet before presenting SNImagePickerController.
+public final class SNImagePickerConfiguration {
     
     public enum Action : Int {
         case openingCamera
@@ -23,14 +23,24 @@ public class SNImagePickerConfiguration {
     private var configuredTitles: [Action : String] = [:]
     typealias SNImagePickerSourceType = UIImagePickerController.SourceType
     
+    // MARK: - public
+    
+    /// Provides a handler with a shared instance of SNImagePickerConfiguration.
+    /// - Parameter handler: Takes a shared instance of SNImagePickerConfiguration as its only parameter.
     public static func configurate(_ handler: (SNImagePickerConfiguration) -> Void) {
         handler(shared)
     }
     
+    /// Configurates localized title of actions those defines in 'Action'.
+    /// - Parameters:
+    ///   - title: Title of action.
+    ///   - action: Instance of 'Action'.
     public func setTitle(_ title: String, for action: Action) {
         configuredTitles[action] = title
     }
     
+    // MARK: - internal
+        
     static func configuredTitle(for action: Action) -> String {
         return shared.configuredTitles[action] ?? ""
     }
@@ -62,10 +72,10 @@ public final class SNImagePickerController : UIImagePickerController {
     public static func present(from presentingViewController: UIViewController,
                                allowsEditing: Bool = true,
                                completionHandler: @escaping (([UIImagePickerController.InfoKey : Any]) -> Void)) {
-        ///
+        /// If there isn't any available source type, ignores presenting.
         let availableSourceTypes = SNImagePickerConfiguration.availableSourceTypes()
         if availableSourceTypes.isEmpty { return }
-        ///
+        /// Presents a action sheet for available source types to select.
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         for availableSourceType in availableSourceTypes {
             let action = SNImagePickerConfiguration.action(for: availableSourceType)
@@ -85,7 +95,7 @@ public final class SNImagePickerController : UIImagePickerController {
     private static func present(from presentingViewController: UIViewController,
                                 allowsEditing: Bool,
                                 sourceType: UIImagePickerController.SourceType,
-                                completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)? = nil) {
+                                completionHandler: (([UIImagePickerController.InfoKey : Any]) -> Void)?) {
         let imagePickerController = SNImagePickerController()
         imagePickerController.sourceType = sourceType
         imagePickerController.allowsEditing = allowsEditing

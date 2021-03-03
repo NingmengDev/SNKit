@@ -12,7 +12,6 @@ public final class SNLoadingHUD : UIView {
     
     private struct Defaults {
         static let offset: CGFloat = -10.0
-        static let status: String = "正在载入"
         static let duration = TimeInterval(UINavigationController.hideShowBarDuration)
     }
     
@@ -69,15 +68,14 @@ public final class SNLoadingHUD : UIView {
     
     // MARK: - Private
     
-    private class func viewHUD(_ view: UIView) -> SNLoadingHUD {
+    private static func viewHUD(_ view: UIView) -> SNLoadingHUD {
         /// view中尚未含有hud，则新建一个
         guard let hud = SNLoadingHUD.hud(for: view) else {
             let hud = SNLoadingHUD(frame: view.bounds)
             view.addSubview(hud)
             return hud
         }
-        
-        /// view中尚已含有一个hud，则
+        /// view中已含有一个hud，则
         /// 移除进行中的动画
         hud.layer.removeAllAnimations()
         /// 恢复默认透明度
@@ -103,21 +101,12 @@ public final class SNLoadingHUD : UIView {
     
     // MARK: - Public
     
-    /// 显示一个loading的hud，使用默认的提示文本 - "正在载入"
+    /// Creates a new loading HUD, adds it to provided view and shows it.
     /// - Parameters:
-    ///   - view: 用于显示的view
-    ///   - tint: 显示颜色
-    ///   - verticalOffset: 竖直方向的调整
-    public static func show(in view: UIView, tint: UIColor = .gray, verticalOffset: CGFloat = 0.0) {
-        self.show(in: view, status: Defaults.status, tint: tint, verticalOffset: verticalOffset)
-    }
-
-    /// 显示一个loading的hud，可指定提示文本
-    /// - Parameters:
-    ///   - view: 用于显示的view
-    ///   - status: 提示文本
-    ///   - tint: 显示颜色
-    ///   - verticalOffset: 竖直方向的调整
+    ///   - view: The view that the HUD will be added to.
+    ///   - status: The tips text that displayed below indicator.
+    ///   - tint: The tint color of the hud.
+    ///   - verticalOffset: To adjust the offset in the vertical direction.
     public static func show(in view: UIView, status: String, tint: UIColor = .gray, verticalOffset: CGFloat = 0.0) {
         let hud = SNLoadingHUD.viewHUD(view)
         hud.statusLabel.text = status
@@ -126,10 +115,10 @@ public final class SNLoadingHUD : UIView {
         hud.activityIndicator.startAnimating()
         hud.elementsCenterYConstraint?.constant = Defaults.offset + verticalOffset
     }
-    
-    /// 获取某个view上已存在的hud
-    /// - Parameter view: 用于显示的view
-    /// - Returns: 已存在的hud
+
+    /// Finds the top-most HUD subview and returns it.
+    /// - Parameter view: The view that is going to be searched.
+    /// - Returns: A reference to the last HUD subview discovered.
     public static func hud(for view: UIView) -> SNLoadingHUD? {
         for hud in view.subviews.reversed() {
             if hud.isKind(of: self) {
@@ -138,11 +127,11 @@ public final class SNLoadingHUD : UIView {
         }
         return nil
     }
-
-    /// 移除某个view上已存在的hud
+    
+    /// Hides the HUD after a delay.
     /// - Parameters:
-    ///   - view: 用于显示的view
-    ///   - delay: 延迟几秒执行
+    ///   - view: The view that the HUD added to.
+    ///   - delay: Delay in seconds until the HUD is hidden.
     public static func dismiss(from view: UIView, delay: TimeInterval = 0.0) {
         guard let hud = SNLoadingHUD.hud(for: view) else { return }
         /// 移除正在进行中的动画
