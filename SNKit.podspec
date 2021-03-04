@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SNKit'
-  s.version          = '1.0.1'
+  s.version          = '1.0.2'
   s.summary          = 'Provides some useful classes, structs and extensions.'
 
 # This description is used to generate tags and improve search results.
@@ -54,6 +54,20 @@ Pod::Spec.new do |s|
   s.subspec 'Networking' do |sp|
       sp.source_files = 'SNKit/Classes/Networking/**/*'
       sp.dependency 'Moya'
+  end
+  
+  # View
+  s.subspec 'View' do |sp|
+      sp.source_files = 'SNKit/Classes/View/**/*'
+      sp.resource_bundles = {
+          'SNProgressHUD' => ['SNKit/Assets/**/*']
+      }
+      sp.dependency 'MBProgressHUD'
+  end
+  
+  # Controller
+  s.subspec 'Controller' do |sp|
+      sp.source_files = 'SNKit/Classes/Controller/**/*'
   end
   
 end
