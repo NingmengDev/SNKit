@@ -8,7 +8,7 @@
 
 import Moya
 
-private var SNNetworkTrackingTokensKey: Void?
+private var SNNetworkTrackingTokensKey = "SNNetworkTrackingTokens"
 
 /// Represents an object type that is compatible with SNNetworking.
 /// You can use `SNNetworkTrackingPlugin` class to track a networking request.

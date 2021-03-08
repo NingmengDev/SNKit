@@ -22,8 +22,8 @@ import DZNEmptyDataSet
 
 // MARK: - UIScrollView+SNEmptyDataSet
 
-private var SNEmptyDataSetAssociatedTypeKey   = "SNEmptyDataSetAssociatedTypeKey"
-private var SNEmptyDataSetAssociatedTargetKey = "SNEmptyDataSetAssociatedTargetKey"
+private var SNEmptyDataSetAssociatedTypeKey   = "SNEmptyDataSetAssociatedType"
+private var SNEmptyDataSetAssociatedTargetKey = "SNEmptyDataSetAssociatedTarget"
 
 public extension UIScrollView {
     
