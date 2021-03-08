@@ -42,12 +42,12 @@ Pod::Spec.new do |s|
 
   # Base
   s.subspec 'Base' do |sp|
-  	sp.source_files = 'SNKit/Classes/Base/**/*'
+      sp.source_files = 'SNKit/Classes/Base/**/*'
   end
   
   # Extension
   s.subspec 'Extension' do |sp|
-  	sp.source_files = 'SNKit/Classes/Extension/**/*'
+      sp.source_files = 'SNKit/Classes/Extension/**/*'
   end
   
   # Networking
@@ -62,6 +62,7 @@ Pod::Spec.new do |s|
       sp.resource_bundles = {
           'SNProgressHUD' => ['SNKit/Assets/**/*']
       }
+      sp.dependency 'DZNEmptyDataSet'
       sp.dependency 'MBProgressHUD'
   end
   
