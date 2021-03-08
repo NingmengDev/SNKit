@@ -333,7 +333,7 @@ final class SNEmptyDataSetSupport : NSObject, SNEmptyDataSetCompatible {
     ///   - view: the view tapped by the user.
     func emptyDataSet(_ scrollView: UIScrollView, didTap view: UIView) {
         var unwrappedView: UIView = view
-        if let t = view as? NSObject, let v = (t as? UIGestureRecognizer)?.view {
+        if let v = ((view as NSObject) as? UIGestureRecognizer)?.view {
             unwrappedView = v /// Fix issue for the 'view' passed UITapGestureRecognizer type.
         }
         self.emptyDataSet(scrollView, didTapAt: unwrappedView)
