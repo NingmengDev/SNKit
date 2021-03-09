@@ -64,6 +64,7 @@ Pod::Spec.new do |s|
       }
       sp.dependency 'DZNEmptyDataSet'
       sp.dependency 'MBProgressHUD'
+      sp.dependency 'MJRefresh'
   end
   
   # Controller

@@ -20,19 +20,19 @@ public extension UIScrollView {
 
 public extension UITableView {
     
-    /// Create an UITableView wiht the given style and set some default parameters.
-    /// - Parameter style: TableView style.
-    /// - Returns: An UITableView.
-    static func standardize(style: UITableView.Style) -> UITableView {
-        let tableView = UITableView(frame: UIScreen.main.bounds, style: style)
+    /// Create an UITableView with the given frame, style and set some default parameters.
+    /// - Parameters:
+    ///   - frame: The initialized frame of the table view.
+    ///   - style: The initialized style of the table view.
+    /// - Returns: An UITableView instance.
+    static func standardize(frame: CGRect, style: UITableView.Style = .plain) -> UITableView {
+        let tableView = UITableView(frame: frame, style: style)
         tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.backgroundColor = UIColor.white
         tableView.estimatedRowHeight = 0.0
         tableView.estimatedSectionHeaderHeight = 0.0
         tableView.estimatedSectionFooterHeight = 0.0
-        let frame = CGRect(origin: .zero, size: CGSize(width: 0.0, height: CGFloat.leastNonzeroMagnitude))
-        tableView.tableHeaderView = UIView(frame: frame)
-        tableView.tableFooterView = UIView(frame: frame)
+        tableView.tableFooterView = UIView(frame: .zero)
         return tableView
     }
 

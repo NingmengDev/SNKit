@@ -99,7 +99,7 @@ private extension UIApplication {
     
     /// Return the root view controller of a window that available in current app.
     static var windowRootViewControllerForAlert: UIViewController? {
-        if let window = UIApplication.availableKeyWindow {
+        if let window = UIApplication.availableKeyWindowForAlert {
             return window.rootViewController
         }
         if let window = UIApplication.shared.windows.first {
@@ -112,7 +112,7 @@ private extension UIApplication {
     }
     
     /// Get the key window, compatible with iOS 13 and multiple scenes.
-    static var availableKeyWindow: UIWindow? {
+    static var availableKeyWindowForAlert: UIWindow? {
         guard #available(iOS 13.0, *) else {
             return UIApplication.shared.keyWindow
         }

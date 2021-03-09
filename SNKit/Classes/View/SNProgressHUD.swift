@@ -10,7 +10,6 @@ import MBProgressHUD
 
 /// SNProgressHUD is a subclass of MBProgressHUD.
 /// Provides some convenient methods to displays a simple HUD.
-/// For more information of usage, see also MBProgressHUD.
 public final class SNProgressHUD : MBProgressHUD {
     
     private enum Status : Int {
@@ -33,18 +32,23 @@ public final class SNProgressHUD : MBProgressHUD {
     private static let shared = SNProgressHUD(frame: UIScreen.main.bounds)
     private override init(view: UIView) { super.init(view: view) }
         
-    private override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
+        self.initialization()
+    }
+
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.initialization()
+    }
+    
+    private func initialization() {
         self.contentColor = UIColor.white
         self.removeFromSuperViewOnHide = true
         self.label.font = UIFont.preferredFont(forTextStyle: .subheadline)
         self.bezelView.style = MBProgressHUDBackgroundStyle.solidColor
         self.bezelView.layer.cornerRadius = Constant.layerCornerRadius
         self.bezelView.color = UIColor(white: 0.1, alpha: Constant.backgroundColorAlpha)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     private static func windowHUD() -> SNProgressHUD {
@@ -112,7 +116,7 @@ private extension UIApplication {
     
     /// Return a window that available in current app.
     static var windowForHUD: UIWindow? {
-        if let window = UIApplication.keyWindowForHUD {
+        if let window = UIApplication.availableKeyWindowForHUD {
             return window
         }
         if let window = UIApplication.shared.windows.first {
@@ -122,7 +126,7 @@ private extension UIApplication {
     }
     
     /// Get the key window, compatible with iOS 13 and multiple scenes.
-    static var keyWindowForHUD: UIWindow? {
+    static var availableKeyWindowForHUD: UIWindow? {
         guard #available(iOS 13.0, *) else {
             return UIApplication.shared.keyWindow
         }
@@ -137,64 +141,7 @@ private extension UIApplication {
     }
 }
 
-/// Provides some convenient methods to display or dismiss a shared HUD in window.
-public extension SNProgressHUD {
-    
-    /// Displays a loading hud containing a activity indicator and an optional tips text.
-    /// After displaying, the hud will be removed until invoking the method named "dismiss" manually.
-    /// - Parameter text: The loading tips text.
-    static func showLoading(_ text: String? = nil) {
-        SNProgressHUD.windowHUD().show(text, status: .loading)
-    }
-    
-    /// Displays a loading hud containing only a tips text.
-    /// After displaying, the hud will be removed until invoking the method named "dismiss" manually.
-    /// - Parameter text: The loading tips text.
-    static func showLoadingOnly(_ text: String) {
-        SNProgressHUD.windowHUD().show(text, status: .loadingTextOnly)
-    }
-
-    /// Hides the shared HUD from window immediately.
-    static func dismiss() {
-        SNProgressHUD.shared.hide(animated: true)
-    }
-    
-    /// Hides the shared HUD from window after a delay.
-    /// - Parameter delay: Delay in seconds until the HUD is hidden.
-    static func dismiss(after delay: TimeInterval) {
-        SNProgressHUD.shared.hide(animated: true, afterDelay: delay)
-    }
-    
-    /// Displays a hud containing only a tips text.
-    /// After displaying, the hud will be removed automatically after 1.5s delay.
-    /// - Parameter text: The tips text.
-    static func showOnly(_ text: String) {
-        SNProgressHUD.windowHUD().show(text, status: .textOnly)
-    }
-    
-    /// Displays a hud containing a done status image and a tips text.
-    /// After displaying, the hud will be removed automatically after 1.5s delay.
-    /// - Parameter text: The tips text of done status.
-    static func showSuccess(_ text: String) {
-        SNProgressHUD.windowHUD().show(text, status: .success)
-    }
-    
-    /// Displays a hud containing a alerting status image and a tips text.
-    /// After displaying, the hud will be removed automatically after 1.5s delay.
-    /// - Parameter text: The tips text of alerting status.
-     static func showInfo(_ text: String) {
-        SNProgressHUD.windowHUD().show(text, status: .info)
-    }
-    
-    /// Displays a hud containing a error status image and a tips text.
-    /// After displaying, the hud will be removed automatically after 1.5s delay.
-    /// - Parameter text: The tips text of error status.
-    static func showError(_ text: String) {
-        SNProgressHUD.windowHUD().show(text, status: .error)
-    }
-}
-
-/// Provides some convenient methods to display or dismiss a HUD in a given view.
+/// Provides some convenient methods to display a HUD in a given view.
 public extension SNProgressHUD {
     
     /// Displays a loading hud containing a activity indicator and an optional tips text.
@@ -266,5 +213,62 @@ public extension SNProgressHUD {
     ///   - view: The view that the HUD will be added to.
     static func showError(_ text: String, in view: UIView) {
         SNProgressHUD.viewHUD(view).show(text, status: .error)
+    }
+}
+
+/// Provides some convenient methods to display a shared HUD in app's window.
+public extension SNProgressHUD {
+    
+    /// Displays a loading hud containing a activity indicator and an optional tips text.
+    /// After displaying, the hud will be removed until invoking the method named "dismiss" manually.
+    /// - Parameter text: The loading tips text.
+    static func showLoading(_ text: String? = nil) {
+        SNProgressHUD.windowHUD().show(text, status: .loading)
+    }
+    
+    /// Displays a loading hud containing only a tips text.
+    /// After displaying, the hud will be removed until invoking the method named "dismiss" manually.
+    /// - Parameter text: The loading tips text.
+    static func showLoadingOnly(_ text: String) {
+        SNProgressHUD.windowHUD().show(text, status: .loadingTextOnly)
+    }
+
+    /// Hides the shared HUD from window immediately.
+    static func dismiss() {
+        SNProgressHUD.shared.hide(animated: true)
+    }
+    
+    /// Hides the shared HUD from window after a delay.
+    /// - Parameter delay: Delay in seconds until the HUD is hidden.
+    static func dismiss(after delay: TimeInterval) {
+        SNProgressHUD.shared.hide(animated: true, afterDelay: delay)
+    }
+    
+    /// Displays a hud containing only a tips text.
+    /// After displaying, the hud will be removed automatically after 1.5s delay.
+    /// - Parameter text: The tips text.
+    static func showOnly(_ text: String) {
+        SNProgressHUD.windowHUD().show(text, status: .textOnly)
+    }
+    
+    /// Displays a hud containing a done status image and a tips text.
+    /// After displaying, the hud will be removed automatically after 1.5s delay.
+    /// - Parameter text: The tips text of done status.
+    static func showSuccess(_ text: String) {
+        SNProgressHUD.windowHUD().show(text, status: .success)
+    }
+    
+    /// Displays a hud containing a alerting status image and a tips text.
+    /// After displaying, the hud will be removed automatically after 1.5s delay.
+    /// - Parameter text: The tips text of alerting status.
+     static func showInfo(_ text: String) {
+        SNProgressHUD.windowHUD().show(text, status: .info)
+    }
+    
+    /// Displays a hud containing a error status image and a tips text.
+    /// After displaying, the hud will be removed automatically after 1.5s delay.
+    /// - Parameter text: The tips text of error status.
+    static func showError(_ text: String) {
+        SNProgressHUD.windowHUD().show(text, status: .error)
     }
 }
