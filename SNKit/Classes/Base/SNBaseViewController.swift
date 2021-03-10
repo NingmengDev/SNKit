@@ -65,9 +65,7 @@ open class SNBaseTableViewController : SNBaseViewController {
         tableView.estimatedRowHeight = 0.0
         tableView.estimatedSectionHeaderHeight = 0.0
         tableView.estimatedSectionFooterHeight = 0.0
-        let frame = CGRect(origin: .zero, size: CGSize(width: 0.0, height: CGFloat.leastNonzeroMagnitude))
-        tableView.tableHeaderView = UIView(frame: frame)
-        tableView.tableFooterView = UIView(frame: frame)
+        tableView.tableFooterView = UIView(frame: .zero)
         return tableView
     }
 }

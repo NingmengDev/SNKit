@@ -17,7 +17,7 @@ public extension UIView {
         let blue = CGFloat.random(in: 0...1)
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
-        
+    
     /// For debugging, set random background color for the view and its subviews.
     /// - Parameter view: Debugging view.
     static func debugInColor(_ view: UIView) {
@@ -44,7 +44,7 @@ public extension UIView {
     }
     
     private var tapGestureHandler: UIViewTapGestureHandler? {
-        set { objc_setAssociatedObject(self, &UIView.tapGestureHandlerAssociatedKey, newValue, .OBJC_ASSOCIATION_COPY) }
+        set { objc_setAssociatedObject(self, &UIView.tapGestureHandlerAssociatedKey, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
         get { return objc_getAssociatedObject(self, &UIView.tapGestureHandlerAssociatedKey) as? UIViewTapGestureHandler }
     }
     

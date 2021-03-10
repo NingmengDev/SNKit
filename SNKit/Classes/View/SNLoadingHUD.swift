@@ -36,7 +36,7 @@ public final class SNLoadingHUD : UIView {
     }()
 
     /// 用于调节竖直方向上的偏移量
-    private weak var elementsCenterYConstraint: NSLayoutConstraint?
+    private var elementsCenterYConstraint: NSLayoutConstraint?
     /// 延时关闭计时器
     private weak var hideDelayTimer: Timer?
     
@@ -50,16 +50,11 @@ public final class SNLoadingHUD : UIView {
         self.addSubview(self.activityIndicator)
         self.addSubview(self.statusLabel)
         
-        self.addConstraint(NSLayoutConstraint(item: self.activityIndicator, attribute: .centerX, relatedBy: .equal,
-                                              toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: self.statusLabel, attribute: .centerX, relatedBy: .equal,
-                                              toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0))
-        self.addConstraint(NSLayoutConstraint(item: self.statusLabel, attribute: .top, relatedBy: .equal,
-                                              toItem: self.activityIndicator, attribute: .bottom, multiplier: 1.0, constant: 10.0))
-        let centerYConstraint = NSLayoutConstraint(item: self.activityIndicator, attribute: .centerY, relatedBy: .equal,
-                                                   toItem: self, attribute: .centerY, multiplier: 1.0, constant: Defaults.offset)
-        self.addConstraint(centerYConstraint)
-        self.elementsCenterYConstraint = centerYConstraint
+        self.elementsCenterYConstraint = activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor, constant: Defaults.offset)
+        self.statusLabel.topAnchor.constraint(equalTo: activityIndicator.bottomAnchor, constant: 10.0).isActive = true
+        self.activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        self.statusLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        self.elementsCenterYConstraint?.isActive = true
     }
     
     required init(coder: NSCoder) {

@@ -35,14 +35,59 @@ open class SNBaseTableViewCell : UITableViewCell, SNBaseViewInitialization {
     }
 }
 
-// MARK: - SNZeroedSeparatorInsetTableViewCell
+// MARK: - SNBaseSeparatorTableViewCell
 
-open class SNZeroedSeparatorInsetTableViewCell : SNBaseTableViewCell {
+open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
     
-    /// Cell will set 'separatorInset' to zero internally.
+    private let separator: UIView = {
+        let view = UIView()
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .separatorDefault
+        } else {
+            view.backgroundColor = .init(red: 198/255.0, green: 198/255.0, blue: 200/255.0, alpha: 1.0)
+        }
+        view.isUserInteractionEnabled = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private var separatorLeftConstraint: NSLayoutConstraint?
+    private var separatorRightConstraint: NSLayoutConstraint?
+    private var separatorHeightConstraint: NSLayoutConstraint?
+    
+    /// Customization of the separator height, default is '1.0 / UIScreen.main.scale'
+    open var separatorHeight: CGFloat = 1.0 / UIScreen.main.scale {
+        didSet {
+            if oldValue == separatorHeight { return }
+            separatorHeightConstraint?.constant = separatorHeight
+        }
+    }
+    
+    /// Customization of the separator color, default is '#C6C6C8'.
+    open var separatorColor: UIColor {
+        set { separator.backgroundColor = newValue }
+        get { return separator.backgroundColor ?? .clear }
+    }
+    
+    /// Customization of the separator inset, default is UITableViewCell.separatorInset.
+    open override var separatorInset: UIEdgeInsets {
+        didSet {
+            if oldValue == separatorInset { return }
+            separatorLeftConstraint?.constant  = +max(separatorInset.left, 0.0)
+            separatorRightConstraint?.constant = -max(separatorInset.right, 0.0)
+        }
+    }
+    
     open override func initialization() {
         super.initialization()
-        self.separatorInset = .zero
+        self.addSubview(separator)
+        self.separatorLeftConstraint = separator.leftAnchor.constraint(equalTo: leftAnchor, constant: separatorInset.left)
+        self.separatorHeightConstraint = separator.heightAnchor.constraint(equalToConstant: separatorHeight)
+        self.separatorRightConstraint = separator.rightAnchor.constraint(equalTo: rightAnchor)
+        self.separator.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        self.separatorLeftConstraint?.isActive = true
+        self.separatorRightConstraint?.isActive = true
+        self.separatorHeightConstraint?.isActive = true
     }
 }
 

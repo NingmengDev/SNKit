@@ -22,21 +22,23 @@ public final class SNRefreshControlConfiguration {
         handler(shared)
     }
     
-    /// Set a shared configurator for pull-to-refresh header.
+    /// Makes some shared configurations for pull-to-refresh header.
     /// - Parameter handler: A handler to configurate pull-to-refresh header.
-    public func setHeaderConfigurator(_ handler: @escaping (MJRefreshNormalHeader) -> Void) {
+    public func configurateHeader(_ handler: @escaping (MJRefreshNormalHeader) -> Void) {
         headerConfigurator = handler
     }
     
-    /// Set a shared configurator for pull-to-refresh footer.
+    /// Makes some shared configurations for pull-to-refresh footer.
     /// - Parameter handler: A handler to configurate pull-to-refresh footer.
-    public func setFooterConfigurator(_ handler: @escaping (MJRefreshAutoNormalFooter) -> Void) {
+    public func configurateFooter(_ handler: @escaping (MJRefreshAutoNormalFooter) -> Void) {
         footerConfigurator = handler
     }
 }
 
-/// MJRefresh Compatible
+/// MJRefresh Compatible.
 /// Provides some convenient methods to use pull-to-refresh.
+/// Especially，we make mutually-exclusive for the header and footer.
+/// When header is refreshing, footer will nor enter refreshing state, and vice versa.
 public extension UIScrollView {
     
     // MARK: - ========= Pulling To Refresh =========
@@ -53,9 +55,12 @@ public extension UIScrollView {
     }
     
     /// Creates a pull-to-refresh header initialized with the given handler.
-    /// - Parameter handler: A block will be invoked when the pull-to-refresh header enters refreshing state.
-    func addPullingToRefresh(handler: @escaping MJRefreshComponentAction) {
-        let header = MJRefreshNormalHeader(refreshingBlock: handler)
+    /// - Parameter actionHandler: A block will be invoked when the pull-to-refresh header enters refreshing state.
+    func addPullingToRefresh(actionHandler: @escaping MJRefreshComponentAction) {
+        let header = MJRefreshNormalHeader { [weak self] in
+            self?.mj_footer?.isUserInteractionEnabled = false
+            actionHandler()
+        }
         header.isAutomaticallyChangeAlpha = true
         header.lastUpdatedTimeLabel?.isHidden = true
         SNRefreshControlConfiguration.shared.headerConfigurator?(header)
@@ -70,6 +75,7 @@ public extension UIScrollView {
     /// Trigger the pull-to-refresh header to end refreshing.
     func endRefreshing() {
         self.mj_header?.endRefreshing()
+        self.mj_footer?.isUserInteractionEnabled = true
     }
     
     // MARK: - ========= Pulling To Load More =========
@@ -81,8 +87,11 @@ public extension UIScrollView {
     
     /// Creates a pull-to-refresh footer initialized with the given handler.
     /// - Parameter handler: A block will be invoked when the pull-to-refresh footer enters loading state.
-    func addPullingToLoadMore(handler: @escaping MJRefreshComponentAction) {
-        let footer = MJRefreshAutoNormalFooter(refreshingBlock: handler)
+    func addPullingToLoadMore(actionHandler: @escaping MJRefreshComponentAction) {
+        let footer = MJRefreshAutoNormalFooter { [weak self] in
+            self?.mj_header?.isUserInteractionEnabled = false
+            actionHandler()
+        }
         footer.isHidden = true
         footer.isAutomaticallyRefresh = true
         footer.triggerAutomaticallyRefreshPercent = 0.5
@@ -91,29 +100,22 @@ public extension UIScrollView {
         self.mj_footer = footer
     }
     
-    /// Trigger the pull-to-refresh footer to enter loading state.
+    /// Triggers the pull-to-refresh footer to enter loading state.
     func startLoadingMore() {
         self.mj_footer?.beginRefreshing()
     }
     
-    /// Trigger the pull-to-refresh footer to end loading.
+    /// Triggers the pull-to-refresh footer to end loading and hides if needed.
     /// - Parameters:
-    ///   - noMoreData: If true, the pull-to-refresh footer will be set to no-more-data state, and display the state title.
+    ///   - noMoreData: If true, the pull-to-refresh footer will be set to no-more-data state, and will not enter loading state when user pulling.
     ///   - hiddenWhenDone: If true, the pull-to-refresh footer will be hidden after ending loading.
     func endLoadingMore(noMoreData: Bool = false, hiddenWhenDone: Bool = false) {
-        self.resetLoadingMore(isEnabled: !noMoreData, isHidden: hiddenWhenDone)
-    }
-    
-    /// Resets the pull-to-refresh footer state and hides if needed.
-    /// - Parameters:
-    ///   - isEnabled: If false, the pull-to-refresh footer will not enter loading state when user pulling.
-    ///   - isHidden: If true, the pull-to-refresh footer will be hidden.
-    func resetLoadingMore(isEnabled: Bool, isHidden: Bool) {
-        if isEnabled {
-            self.mj_footer?.endRefreshing()
-        } else {
+        if noMoreData {
             self.mj_footer?.endRefreshingWithNoMoreData()
+        } else {
+            self.mj_footer?.endRefreshing()
         }
-        self.mj_footer?.isHidden = isHidden
+        self.mj_footer?.isHidden = hiddenWhenDone
+        self.mj_header?.isUserInteractionEnabled = true
     }
 }

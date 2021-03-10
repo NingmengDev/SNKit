@@ -59,13 +59,12 @@ public final class SNNavigationBar : UIView {
         self.navigationBar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         self.navigationBar.pushItem(self.navigationItem, animated: false)
         self.addSubview(self.navigationBar)
-    }
-
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        var frame = CGRect(x: 0.0, y: 0.0, width: self.bounds.width, height: 0.0)
-        frame.size.height = max(44.0, self.navigationBar.bounds.height)
-        frame.origin.y = self.bounds.height - frame.size.height
-        self.navigationBar.frame = frame
+        
+        let height = max(44.0, self.navigationBar.bounds.height)
+        self.navigationBar.translatesAutoresizingMaskIntoConstraints = false
+        self.navigationBar.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        self.navigationBar.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        self.navigationBar.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        self.navigationBar.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
 }
