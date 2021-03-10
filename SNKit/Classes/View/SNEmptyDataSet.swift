@@ -25,7 +25,7 @@ import DZNEmptyDataSet
 private var SNEmptyDataSetAssociatedTypeKey   = "SNEmptyDataSetAssociatedType"
 private var SNEmptyDataSetAssociatedTargetKey = "SNEmptyDataSetAssociatedTarget"
 
-/// DZNEmptyDataSet Compatible
+/// DZNEmptyDataSet Compatible.
 /// Provides some convenient methods to show empty datasets whenever the view has no content to display.
 public extension UIScrollView {
     

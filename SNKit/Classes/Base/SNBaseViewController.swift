@@ -53,8 +53,9 @@ open class SNBaseTableViewController : SNBaseViewController {
         super.init(coder: coder)
     }
     
-    open override func loadView() {
-        super.loadView()
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        self.tableView.frame = view.bounds
         self.view.addSubview(self.tableView)
     }
     
@@ -87,8 +88,9 @@ open class SNBaseCollectionViewController : SNBaseViewController {
         super.init(coder: coder)
     }
     
-    open override func loadView() {
-        super.loadView()
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        self.collectionView.frame = view.bounds
         self.view.addSubview(self.collectionView)
     }
     

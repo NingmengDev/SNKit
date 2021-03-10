@@ -8,7 +8,7 @@
 
 import MJRefresh
 
-/// MJRefresh Compatible
+/// MJRefresh Compatible.
 /// Provides a configuration class to configurate pull-to-refresh header or footer defined in 'MJRefresh'.
 public final class SNRefreshControlConfiguration {
     

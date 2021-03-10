@@ -39,6 +39,10 @@ open class SNBaseTableViewCell : UITableViewCell, SNBaseViewInitialization {
 
 open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
     
+    private var separatorLeftConstraint: NSLayoutConstraint?
+    private var separatorRightConstraint: NSLayoutConstraint?
+    private var separatorHeightConstraint: NSLayoutConstraint?
+    
     private let separator: UIView = {
         let view = UIView()
         if #available(iOS 13.0, *) {
@@ -50,12 +54,8 @@ open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-    private var separatorLeftConstraint: NSLayoutConstraint?
-    private var separatorRightConstraint: NSLayoutConstraint?
-    private var separatorHeightConstraint: NSLayoutConstraint?
-    
-    /// Customization of the separator height, default is '1.0 / UIScreen.main.scale'
+
+    /// Customization of the separator height, default is '1.0 / UIScreen.main.scale'.
     open var separatorHeight: CGFloat = 1.0 / UIScreen.main.scale {
         didSet {
             if oldValue == separatorHeight { return }
@@ -69,15 +69,24 @@ open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
         get { return separator.backgroundColor ?? .clear }
     }
     
-    /// Customization of the separator inset, default is UITableViewCell.separatorInset.
+    /// Customization of the separator inset values.
+    /// Positive inset values move the separator inward and away from edges of the cell.
+    /// Negative values are treated as if the inset is set to 0.
+    /// The table view uses only the left and right inset values; it ignores the top and bottom inset values.
     open override var separatorInset: UIEdgeInsets {
-        didSet {
-            if oldValue == separatorInset { return }
-            separatorLeftConstraint?.constant  = +max(separatorInset.left, 0.0)
-            separatorRightConstraint?.constant = -max(separatorInset.right, 0.0)
+        set {
+            if newValue == separatorInset { return }
+            separatorLeftConstraint?.constant  = +max(newValue.left, 0.0)
+            separatorRightConstraint?.constant = -max(newValue.right, 0.0)
+        }
+        get {
+            let left = separatorLeftConstraint?.constant ?? super.separatorInset.left
+            let right = separatorRightConstraint?.constant ?? super.separatorInset.right
+            return UIEdgeInsets(top: 0.0, left: left, bottom: 0.0, right: right)
         }
     }
     
+    /// Initializes separator, if you override this method in subclass, you must call super.
     open override func initialization() {
         super.initialization()
         self.addSubview(separator)
