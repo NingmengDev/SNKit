@@ -53,6 +53,13 @@ open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    /// Setting the value of this property to true hides the separator and setting it to false shows the separator.
+    /// The default value is false.
+    open var isSeparatorHidden: Bool {
+        set { separator.isHidden = newValue }
+        get { return separator.isHidden }
+    }
 
     /// Customization of the separator height, default is '1.0 / UIScreen.main.scale'.
     open var separatorHeight: CGFloat = 1.0 / UIScreen.main.scale {
