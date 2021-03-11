@@ -16,9 +16,7 @@ open class SNBaseViewController : UIViewController {
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor.white
     }
-    
-    // MARK: - StatusBar
-    
+        
     open override var prefersStatusBarHidden: Bool {
         return false
     }
@@ -26,14 +24,6 @@ open class SNBaseViewController : UIViewController {
     open override var preferredStatusBarStyle: UIStatusBarStyle {
         return .default
     }
-    
-    // MARK: - deinit
-    
-#if DEBUG
-    deinit {
-        print("\(type(of: self)) deinit.")
-    }
-#endif
 }
 
 // MARK: - SNBaseTableViewController

@@ -30,7 +30,6 @@ open class SNBaseTableViewCell : UITableViewCell, SNBaseViewInitialization {
     }
     
     open func initialization() {
-        self.contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.contentView.backgroundColor = UIColor.white
     }
 }
@@ -115,7 +114,6 @@ open class SNBaseTableViewHeaderFooterView : UITableViewHeaderFooterView, SNBase
     }
     
     open func initialization() {
-        self.contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.contentView.backgroundColor = UIColor.white
     }
 }
@@ -135,7 +133,6 @@ open class SNBaseCollectionViewCell : UICollectionViewCell, SNBaseViewInitializa
     }
     
     open func initialization() {
-        self.contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.contentView.backgroundColor = UIColor.white
     }
 }
