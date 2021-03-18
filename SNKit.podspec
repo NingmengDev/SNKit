@@ -72,4 +72,9 @@ Pod::Spec.new do |s|
       sp.source_files = 'SNKit/Classes/Controller/**/*'
   end
   
+  # Utils
+  s.subspec 'Utils' do |sp|
+      sp.source_files = 'SNKit/Classes/Utils/**/*'
+  end
+  
 end

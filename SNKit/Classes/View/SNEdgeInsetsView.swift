@@ -8,8 +8,10 @@
 
 import UIKit
 
+/// A subclass of UILabel that can set inset distances for text.
 open class SNEdgeInsetsLabel : UILabel {
-
+    
+    /// The inset distances for text.
     open var textInsets: UIEdgeInsets = .zero {
         didSet { self.invalidateIntrinsicContentSize() }
     }
@@ -19,18 +21,21 @@ open class SNEdgeInsetsLabel : UILabel {
     }
 
     open override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
-        var rect = super.textRect(forBounds: bounds.inset(by: textInsets),
+        let insets = textInsets
+        var rect = super.textRect(forBounds: bounds.inset(by: insets),
                                   limitedToNumberOfLines: numberOfLines)
-        rect.origin.x    -= textInsets.left
-        rect.origin.y    -= textInsets.top
-        rect.size.width  += (textInsets.left + textInsets.right)
-        rect.size.height += (textInsets.top + textInsets.bottom)
+        rect.origin.x -= insets.left
+        rect.origin.y -= insets.top
+        rect.size.width += (insets.left + insets.right)
+        rect.size.height += (insets.top + insets.bottom)
         return rect
     }
 }
 
+/// A subclass of UITextField that can set inset distances for text.
 open class SNEdgeInsetsTextField : UITextField {
-
+    
+    /// The inset distances for text.
     open var textInsets: UIEdgeInsets = .zero {
         didSet { self.invalidateIntrinsicContentSize() }
     }
