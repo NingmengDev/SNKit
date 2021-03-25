@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// Convenience class to use GCD timer.
+/// A convenience class to use GCD timer.
 open class SNTimer {
     
     private enum State : Int {

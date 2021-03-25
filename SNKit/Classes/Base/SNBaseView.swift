@@ -45,7 +45,7 @@ open class SNBaseSeparatorTableViewCell : SNBaseTableViewCell {
     private let separator: UIView = {
         let view = UIView()
         if #available(iOS 13.0, *) {
-            view.backgroundColor = .separatorDefault
+            view.backgroundColor = .separator
         } else {
             view.backgroundColor = .init(red: 198/255.0, green: 198/255.0, blue: 200/255.0, alpha: 1.0)
         }
