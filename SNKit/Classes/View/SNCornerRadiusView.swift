@@ -2,29 +2,48 @@
 //  SNCornerRadiusView.swift
 //  SNKit
 //
-//  Created by SN on 2021/2/3.
+//  Created by SN on 2021/3/25.
 //  Copyright © 2021 Apple. All rights reserved.
 //
 
 import UIKit
 
+/// A corner radius struct for SNCornerRadiusView.
 public struct SNCornerRadii : Equatable {
     public var tl: CGFloat
     public var tr: CGFloat
     public var bl: CGFloat
     public var br: CGFloat
-    public static let zero = SNCornerRadii(tl: 0.0, tr: 0.0, bl: 0.0, br: 0.0)
     
+    /// All radii are set to 0.
+    public static let zero = SNCornerRadii(radii: 0.0)
+    
+    /// Creates a new corner radius struct.
+    /// - Parameters:
+    ///   - tl: Radius of top-left.
+    ///   - tr: Radius of top-right.
+    ///   - bl: Radius of bottom-left.
+    ///   - br: Radius of bottom-right.
     public init(tl: CGFloat, tr: CGFloat, bl: CGFloat, br: CGFloat) {
-        self.tl = tl
-        self.tr = tr
-        self.bl = bl
-        self.br = br
+        self.tl = tl; self.tr = tr
+        self.bl = bl; self.br = br
+    }
+    
+    /// All radii are set to the same value.
+    /// - Parameter radii: The same value for all radii.
+    public init(radii: CGFloat) {
+        self.tl = radii; self.tr = radii
+        self.bl = radii; self.br = radii
     }
 }
 
+/// A convenience view class to set diffrent corner radius.
 open class SNCornerRadiusView : UIView {
     
+    /// The radius for every corner.
+    /// Negative values are treated as if the radius is set to 0.
+    /// The sum of horizontal radii ('tl+tr' or 'bl+br') must less than or equal to width of the view.
+    /// The sum of vertical radii ('tl+bl' or 'tr+br') must less than or equal to hight of the view.
     open var cornerRadii: SNCornerRadii = .zero {
         didSet {
             if oldValue == cornerRadii { return }
@@ -32,20 +51,24 @@ open class SNCornerRadiusView : UIView {
         }
     }
     
+    /// The width of the layer’s border, same as CALayer.borderWidth.
+    /// Negative values are treated as if the border width is set to 0.
     open var borderWidth: CGFloat = 0.0 {
         didSet {
             if oldValue == borderWidth { return }
             self.setNeedsDisplay() /// Need to redraw.
         }
     }
-
-    open var borderColor: CGColor? = nil {
+    
+    /// The color of the layer’s border, same as CALayer.borderColor.
+    open var borderColor: UIColor? = nil {
         didSet {
             if oldValue == borderColor { return }
             self.setNeedsDisplay() /// Need to redraw.
         }
     }
     
+    /// The sub layer to draw border.
     private var borderLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.fillColor = nil
@@ -53,51 +76,72 @@ open class SNCornerRadiusView : UIView {
         return layer
     }()
     
+    /// When the path defining the shape has been rendered, this block wil be executed and pass the path as parameter.
+    /// You can observe the path updating to handle something, such as adjusting the shadow path of a layer.
     open var pathUpdatedHander: ((CGPath) -> Void)?
     
+    /// Creates a new round corners view with the given corner radii.
+    /// - Parameter cornerRadii: The corner radii for the view.
     public init(cornerRadii: SNCornerRadii) {
         super.init(frame: .zero)
-        self.cornerRadii = cornerRadii
-        self.layer.mask = CAShapeLayer()
-        self.layer.addSublayer(borderLayer)
+        self.initWithCornerRadii(cornerRadii)
     }
     
+    /// Required initializer.
+    /// - Parameter coder: An unarchiver object.
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        self.cornerRadii = .zero
+        self.initWithCornerRadii(.zero)
+    }
+    
+    private func initWithCornerRadii(_ radii: SNCornerRadii) {
+        self.cornerRadii = radii
+        self.backgroundColor = .white
         self.layer.mask = CAShapeLayer()
         self.layer.addSublayer(borderLayer)
     }
     
+    /// Renders round corners path, if you override this method in subclass, you must call super.
+    /// - Parameter rect: The portion of the view’s bounds that needs to be updated.
     open override func draw(_ rect: CGRect) {
         super.draw(rect)
         if rect == .zero { return }
         
-        let path = CGPath.path(roundedRect: rect,
-                               cornerRadii: cornerRadii)
+        let radii = radiiThatFits(rect)
+        let path = pathThatFits(rect, radii: radii)
         (self.layer.mask as? CAShapeLayer)?.path = path
-        
-        self.borderLayer.lineWidth = borderWidth * 2
-        self.borderLayer.strokeColor = borderColor
+                
         self.borderLayer.path = path
+        self.borderLayer.lineWidth = borderThatFits(rect)
+        self.borderLayer.strokeColor = borderColor?.cgColor
         
         self.pathUpdatedHander?(path)
     }
-}
-
-private extension CGPath {
     
-    static func path(roundedRect rect: CGRect, cornerRadii radii: SNCornerRadii) -> CGPath {
-        let tl = CGSize(width: max(0.0, min(radii.tl, rect.width - radii.tr)), height: max(0.0, min(radii.tl, rect.height - radii.bl)))
-        let tr = CGSize(width: max(0.0, min(radii.tr, rect.width - radii.tl)), height: max(0.0, min(radii.tr, rect.height - radii.br)))
-        let bl = CGSize(width: max(0.0, min(radii.bl, rect.width - radii.br)), height: max(0.0, min(radii.bl, rect.height - radii.tl)))
-        let br = CGSize(width: max(0.0, min(radii.br, rect.width - radii.bl)), height: max(0.0, min(radii.br, rect.height - radii.tr)))
-        let bezierPath = CGMutablePath()
-        bezierPath.addArc(center: CGPoint(x: rect.minX + tl.width, y: rect.minY + tl.height), radius: radii.tl, startAngle: .pi, endAngle: 3 * .pi / 2, clockwise: false)
-        bezierPath.addArc(center: CGPoint(x: rect.maxX - tr.width, y: rect.minY + tr.height), radius: radii.tr, startAngle: 3 * .pi / 2, endAngle: 0.0, clockwise: false)
-        bezierPath.addArc(center: CGPoint(x: rect.maxX - br.width, y: rect.maxY - br.height), radius: radii.br, startAngle: 0.0, endAngle: .pi / 2, clockwise: false)
-        bezierPath.addArc(center: CGPoint(x: rect.minX + bl.width, y: rect.maxY - bl.height), radius: radii.bl, startAngle: .pi / 2, endAngle: .pi, clockwise: false)
-        bezierPath.closeSubpath()
-        return bezierPath
+    private func radiiThatFits(_ rect: CGRect) -> SNCornerRadii {
+        let radii = SNCornerRadii(tl: max(0.0, cornerRadii.tl), tr: max(0.0, cornerRadii.tr),
+                                  bl: max(0.0, cornerRadii.bl), br: max(0.0, cornerRadii.br))
+        if radii.tl + radii.tr > rect.width { return .zero }
+        if radii.tr + radii.br > rect.height { return .zero }
+        if radii.br + radii.bl > rect.width { return .zero }
+        if radii.bl + radii.tl > rect.height { return .zero }
+        return radii
+    }
+    
+    func borderThatFits(_ rect: CGRect) -> CGFloat {
+        let width = max(0.0, borderWidth)
+        if width * 2 > rect.width { return 0.0 }
+        if width * 2 > rect.height { return 0.0 }
+        return width * 2
+    }
+    
+    private func pathThatFits(_ rect: CGRect, radii: SNCornerRadii) -> CGPath {
+        let path = CGMutablePath()
+        path.addArc(center: CGPoint(x: rect.minX + radii.tl, y: rect.minY + radii.tl), radius: radii.tl, startAngle: .pi, endAngle: 1.5 * .pi, clockwise: false)
+        path.addArc(center: CGPoint(x: rect.maxX - radii.tr, y: rect.minY + radii.tr), radius: radii.tr, startAngle: 1.5 * .pi, endAngle: 0.0, clockwise: false)
+        path.addArc(center: CGPoint(x: rect.maxX - radii.br, y: rect.maxY - radii.br), radius: radii.br, startAngle: 0.0, endAngle: .pi / 2, clockwise: false)
+        path.addArc(center: CGPoint(x: rect.minX + radii.bl, y: rect.maxY - radii.bl), radius: radii.bl, startAngle: .pi / 2, endAngle: .pi, clockwise: false)
+        path.closeSubpath()
+        return path
     }
 }
