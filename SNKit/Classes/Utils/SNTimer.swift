@@ -126,7 +126,6 @@ public final class SNCountDownTimer : SNTimer {
     public init(duration: TimeInterval, queue: DispatchQueue? = nil) {
         self.duration = duration
         super.init(timeInterval: 1.0, queue: queue)
-        UIDatePicker().datePickerMode = .countDownTimer
     }
     
     /// Activates timer and executes block immediately.

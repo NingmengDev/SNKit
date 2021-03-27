@@ -60,7 +60,7 @@ Pod::Spec.new do |s|
   s.subspec 'View' do |sp|
       sp.source_files = 'SNKit/Classes/View/**/*'
       sp.resource_bundles = {
-          'SNProgressHUD' => ['SNKit/Assets/**/*']
+          'SNProgressHUD' => ['SNKit/Assets/SNProgressHUD.xcassets']
       }
       sp.dependency 'DZNEmptyDataSet'
       sp.dependency 'MBProgressHUD'

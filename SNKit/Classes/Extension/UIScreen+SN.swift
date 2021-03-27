@@ -43,21 +43,21 @@ public extension UIScreen {
 
 public extension UIScreen {
     
-    /// 以指定的屏幕宽度为基准获取屏幕适配值
+    /// Gets the fit value in current screen based on the specified screen width.
     /// - Parameters:
-    ///   - base: 指定的屏幕宽度
-    ///   - lhs: 当前屏幕宽度大于指定的屏幕宽度时的适配值
-    ///   - rhs: 当前屏幕宽度小于等于指定的屏幕宽度时的适配值
-    /// - Returns: 屏幕适配值
+    ///   - base: The specified screen width.
+    ///   - lhs: The adaptation value when the current screen width is greater than the specified screen width.
+    ///   - rhs: The adaptation value when the current screen width is less than or equal to the specified screen width.
+    /// - Returns: The fit value in current screen.
     static func valueBaseWidth<T>(_ width: CGFloat, lhs: T, rhs: T) -> T {
         return main.minimumLength > width ? lhs : rhs
     }
     
-    /// 以4.0英寸屏幕宽度为基准获取屏幕适配值
+    /// Gets the fit value in current screen based on the 4-inch screen width (320.0pt).
     /// - Parameters:
-    ///   - lhs: 当前屏幕宽度大于4.0英寸屏幕宽度时的适配值
-    ///   - rhs: 当前屏幕宽度小于等于4.0英寸屏幕宽度时的适配值
-    /// - Returns: 屏幕适配值
+    ///   - lhs: The adaptation value when the current screen width is greater than the 4-inch screen width.
+    ///   - rhs: The adaptation value when the current screen width is less than or equal to the 4-inch screen width.
+    /// - Returns: The fit value in current screen.
     static func valueBase4InchWidth<T>(lhs: T, rhs: T) -> T {
         return valueBaseWidth(320.0, lhs: lhs, rhs: rhs)
     }
